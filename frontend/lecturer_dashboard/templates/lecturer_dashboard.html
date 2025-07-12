@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lecturer Dashboard</title>
+    <link rel="stylesheet" href="/static/styles/lecture.css">
+</head>
+<body>
+    <div class="dashboard-box">
+    <div class="welcome-message">
+    <h2>Welcome, {{ lecturer.first_name }}!</h2></div>
+    <h3>Your Current Classes</h3>
+    {% if current_classes %}
+    <div class="class-list">
+        <ul>
+        {% for class_ in current_classes %}
+            <li>
+                    <div class="class-block">
+                      <div class="class-field">
+                        <strong>Class ID:</strong> <span>{{ class_.class_id }}</span>
+                      </div>
+                      <div class="class-field">
+                        <strong>Subject:</strong> <span>{{ class_.subject }}</span>
+                      </div>
+                    </div>
+                    <a class="action-link" href="/lecturer/class/{{ class_.class_id }}/manage">Manage</a>                
+            </li>
+        {% endfor %}
+        </ul>
+      </div>
+    {% else %}
+        <p>No active classes.</p>
+    {% endif %}
+
+    <hr>
+
+        <h3>Classes Done</h3>
+        {% if completed_classes %}
+        <div class="class-list">
+            <ul>
+            {% for class_ in completed_classes %}
+                <li>
+                        <div class="class-block">
+                          <div class="class-field">
+                            <strong>Class ID:</strong> <span>{{ class_.class_id }}</span>
+                          </div>
+                          <div class="class-field">
+                            <strong>Subject:</strong> <span>{{ class_.subject }}</span>
+                          </div>
+                        </div>
+                        <a class="action-link" href="/lecturer/analytics/class/{{ class_._id }}">📊 Analytics</a>
+                      
+                </li>
+            {% endfor %}
+            </ul>
+          </div>
+        {% else %}
+            <p>No completed classes yet.</p>
+        {% endif %}
+
+    <hr>
+
+
+    <h3><a href="/lecturer/add-class" class="add-class-link">➕ Add New Class</a></h3>
+    <div class="logout-container">
+    <button class="logout-button" onclick="window.location.href='/logout'">Logout</button></div>
+</div>
+</body>
+</html>
+<script>
+    const flashMessage = "{{ flash_message }}";
+    if (flashMessage) {
+        alert(flashMessage);
+    }

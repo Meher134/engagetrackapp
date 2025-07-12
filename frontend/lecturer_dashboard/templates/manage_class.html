@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Class - {{ class_obj.subject }} ({{ class_obj.class_id }})</title>
+  <link rel="stylesheet" href="/static/styles/manage_class.css">
+</head>
+<body>
+  <div class="manage-box">
+    <h1>Manage Class: {{ class_obj.subject }} ({{ class_obj.class_id }})</h1>
+    <p class="subheading">Use the options below to manage student enrollment and sessions</p>
+
+    <h2>Current Students</h2>
+    {% if current_students %}
+      <form action="/lecturer/class/{{ class_obj.class_id }}/update-students" method="post">
+        <ul>
+          {% for student in current_students %}
+            <li>
+              <span>{{ student.first_name }} {{ student.last_name }} <span class="code">({{ student.roll_number }})</span></span>
+              <label class="remove-label">
+                <input type="checkbox" name="remove_student_ids" value="{{ student.roll_number }}"> Remove
+              </label>
+            </li>
+          {% endfor %}
+        </ul>
+        <button type="submit">Update Student List</button>
+      </form>
+    {% else %}
+      <p>No students enrolled in this class yet.</p>
+    {% endif %}
+
+    <hr>
+
+    <h2>Add Students</h2>
+    {% if available_students %}
+      <form action="/lecturer/class/{{ class_obj.class_id }}/update-students" method="post">
+        <select name="add_student_ids" multiple size="6">
+          {% for student in available_students %}
+            <option value="{{ student.roll_number }}">
+              {{ student.first_name }} {{ student.last_name }} ({{ student.roll_number }})
+            </option>
+          {% endfor %}
+        </select>
+        <button type="submit">Add Selected Students</button>
+      </form>
+    {% else %}
+      <p>All students are already enrolled in this class.</p>
+    {% endif %}
+
+    <hr>
+
+    <h2>Start Class Session</h2>
+    <form action="/lecturer/class/{{ class_obj._id }}/record-lecture" method="get">
+      <button type="submit">Start Recording Session</button>
+    </form>
+
+    <div class="back-link">
+      <a href="/lecturer/dashboard">Back to Dashboard</a>
+    </div>
+
+  </div>
+</body>
+</html>

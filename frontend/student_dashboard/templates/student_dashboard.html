@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Dashboard</title>
+  <link rel="stylesheet" href="/static/styles/student_dash.css">
+</head>
+<body>
+  <div class="dashboard-box">
+  <h1>Welcome, {{ student.first_name }}!</h1>
+
+  {% if request.session.get("flash_error") %}
+  <div id="flash-message" class="flash-message">
+    {{ request.session.get("flash_error") }}
+  </div>
+  {% set _ = request.session.pop("flash_error") %}
+{% endif %}
+
+
+  <h2>Current Enrolled Classes</h2>
+  {% if enrolled_classes %}
+  <div class="class-list">
+    <ul>
+      {% for cls in enrolled_classes %}
+        <li>
+          <strong>{{ cls.subject }}</strong> ({{ cls.class_id }})
+          <a href="/student/class/{{ cls.class_id }}/submit-essay">
+            <button type="button">Submit Essay</button>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% else %}
+    <p>No active classes enrolled.</p>
+  {% endif %}
+
+  <hr>
+
+  <h2>Completed Classes</h2>
+  {% if completed_classes %}
+  <div class="class-list">
+    <ul>
+      {% for cls in completed_classes %}
+      <li>
+        <div class="class-info">
+          <strong>{{ cls.subject }}</strong>
+          <span class="code">({{ cls.class_id }})</span>
+        </div>
+        <div class="button-group">
+        <a href="/student/class/{{ cls.class_id }}/view-feedback">
+          <button type="button">View Feedback</button>
+        </a>
+      </div>
+      </li>      
+      {% endfor %}
+    </ul>
+  </div>
+  {% else %}
+    <p>No classes completed yet.</p>
+  {% endif %}
+  <hr>
+  <form action="/logout" method="get">
+    <button type="submit">Logout</button>
+  </form>
+
+</div>
+<script>
+  const flash = document.getElementById("flash-message");
+  if (flash) {
+    setTimeout(() => {
+      flash.classList.add("fade-out");
+    }, 4000); 
+  }
+</script>
+
+</body>
+</html>

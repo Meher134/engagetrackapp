@@ -1,0 +1,45 @@
+# FastAPI and web server
+fastapi
+uvicorn
+
+# Database
+sqlalchemy
+pydantic
+pydantic[email]
+email-validator
+passlib
+python-jose[cryptography]
+
+# ML + Typing Analysis
+scikit-learn
+scipy
+pandas
+numpy
+matplotlib
+spacy
+textstat
+language_tool_python
+
+# NLP Similarity
+transformers
+torch
+sentence-transformers
+
+# Typing behavior + metrics
+openvino
+joblib
+
+# Plagiarism / Keyword tools
+nltk
+
+# Optional utilities
+python-dotenv
+
+
+jinja2
+motor 
+bcrypt<4.0.0
+python-multipart
+keybert
+
+itsdangerous

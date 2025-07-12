@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Engagement Detail</title>
+    <link rel="stylesheet" href="/static/styles/student_engagement.css">
+</head>
+<body>
+    <div class="engagement-container">
+    <h2>Student: {{ student.first_name }} {{ student.last_name }} ({{ student.roll_number }})</h2>
+    <h3>Class: {{ class_.subject }} ({{ class_.class_id }})</h3>
+
+    <hr>
+    <div class="section">
+    <h3>Essay Submitted:</h3>
+    <pre>{{ essay_text }}</pre>
+
+    <pre>{{ typing_log.essay_text if typing_log else "No essay submitted." }}</pre>
+</div>
+    <hr>
+    <div class="section">
+    <h3>Engagement Report:</h3>
+    {% if typing_log %}
+        <ul>
+            <li><strong>Engagement Score:</strong> {{ typing_log.analysis_report.engagement_score }}</li>
+            <li><strong>Typing Style:</strong> {{ typing_log.analysis_report.typing_style }}</li>
+            <li><strong>Similarity Score:</strong> {{ typing_log.analysis_report.similarity_score }}</li>
+        </ul>
+    {% else %}
+        <p>No analysis available for this student.</p>
+    {% endif %}
+    </div>
+    <hr>
+    <div class="section">
+    <h3>Submit Feedback</h3>
+    <form method="post" action="/lecturer/analytics/student/{{ student._id }}/class/{{ class_._id }}/feedback">
+        <textarea name="feedback" rows="5" cols="60">{{ feedback }}</textarea><br>
+        <button type="submit">💾 Save Feedback</button>
+    </form>
+    </div>
+    <br>
+    <div class="back-link">
+    <a class="back-btn"href="/lecturer/dashboard">Back to Dashboard</a>
+</div>
+    </div>
+</body>
+</html>

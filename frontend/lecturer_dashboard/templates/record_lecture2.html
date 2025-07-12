@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Record Lecture</title>
+    <link rel="stylesheet" href="/static/styles/record1.css">
+</head>
+<body>
+    <div class="record-container">
+    <h2>Record Lecture for Class ID: {{ class_id }}</h2>
+    <div class="button-group">
+    <button id="startSessionBtn">Start Session</button>
+    <button id="startVoiceBtn" style="display:none;">Start Voice Recognition</button>
+</div>
+    <div id="sessionArea" style="display:none; margin-top: 20px;">
+        <form id="transcriptForm">
+            <label for="transcript">Transcript (editable):</label><br>
+            <textarea id="transcript" name="transcript_text" rows="10" cols="80" placeholder="Voice transcript will appear here..."></textarea><br><br>
+            <button type="submit">Submit Transcript</button>
+        </form>
+    </div>
+</div>
+    <script>
+        const classId = "{{ class_id }}";
+        let sessionId = null;
+        let recognition;
+        let finalTranscript = "";
+
+        document.getElementById("startSessionBtn").addEventListener("click", async () => {
+            const response = await fetch(`/lecturer/class/${classId}/start-session`, { method: "POST" });
+            const data = await response.json();
+            if (data.session_id) {
+                sessionId = data.session_id;
+                alert("Session started with ID: " + sessionId);
+                document.getElementById("sessionArea").style.display = "block";
+                document.getElementById("startSessionBtn").disabled = true;
+                document.getElementById("startVoiceBtn").style.display = "inline";
+            } else {
+                alert("Failed to start session");
+            }
+        });
+
+        document.getElementById("startVoiceBtn").addEventListener("click", () => {
+            if (!('webkitSpeechRecognition' in window)) {
+                alert("Speech recognition not supported in your browser.");
+                return;
+            }
+
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+
+            recognition.onresult = function(event) {
+                let interimTranscript = "";
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    const transcriptChunk = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        if (!finalTranscript.endsWith(transcriptChunk)) {
+                            finalTranscript += transcriptChunk + " ";
+                        }
+                    } else {
+                        interimTranscript += transcriptChunk;
+                    }
+                }
+                document.getElementById("transcript").value = finalTranscript + interimTranscript;
+            };
+
+            recognition.onerror = function(event) {
+                console.error("Speech recognition error:", event.error);
+            };
+
+            recognition.onend = function() {
+                console.log("Speech recognition ended.");
+            };
+
+            recognition.start();
+            alert("Voice recognition started. Speak now.");
+        });
+
+        document.getElementById("transcriptForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            if (!sessionId) {
+                alert("Start a session first");
+                return;
+            }
+
+            if (recognition) recognition.stop();
+
+            const transcript = document.getElementById("transcript").value;
+            const formData = new FormData();
+            formData.append("transcript_text", transcript);
+
+            const response = await fetch(`/lecturer/class/${classId}/session/${sessionId}/upload-transcript`, {
+                method: "POST",
+                body: formData,
+                redirect: "follow"
+            });
+
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else {
+                try {
+                    const data = await response.json();
+                    alert(data.message || "Transcript saved.");
+                    window.location.href = "/lecturer/dashboard";
+                } catch {
+                    alert("Transcript saved. Redirecting...");
+                    window.location.href = "/lecturer/dashboard";
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

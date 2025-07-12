@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Feedback - {{ class_.subject }} ({{ class_.class_id }})</title>
+    <link rel="stylesheet" href="/static/styles/student_feedback.css">
+</head>
+<body>
+    <div class="feedback-container">
+        <h2>📘 Feedback for Class: {{ class_.subject }} ({{ class_.class_id }})</h2>
+
+        <div class="section">
+            <h3>Essay Submitted:</h3>
+            {% if essay_text %}
+                <pre>{{ essay_text }}</pre>
+            {% else %}
+                <p class="info">Essay not found.</p>
+            {% endif %}
+        </div>
+        <hr>
+
+        <div class="section">
+            <h3>Transcript (from Lecture):</h3>
+            {% if transcript_text %}
+                <pre>{{ transcript_text }}</pre>
+            {% else %}
+                <p class="info">Transcript not available.</p>
+            {% endif %}
+        </div>
+        <hr>
+
+        <div class="section">
+            <h3>Engagement Score:</h3>
+            <p class="highlight">{{ score_text }}</p>
+        </div>
+        <hr>
+
+        <div class="section">
+            <h3>Lecturer Feedback:</h3>
+            {% if feedback %}
+                <pre>{{ feedback }}</pre>
+            {% else %}
+                <p class="info">No feedback yet.</p>
+            {% endif %}
+        </div>
+        <hr>
+        <div class="back-link">
+        <a href="/student/dashboard" class="back-btn">Back to Dashboard</a>
+    </div>
+    </div>
+</body>
+</html>

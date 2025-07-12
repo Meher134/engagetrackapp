@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Typing Test - Student Engagement</title>
+    <link rel="stylesheet" href="/static/styles/typingtest.css">
+</head>
+<body>
+    <div class="typing-box">
+    <h2>Typing Test</h2>
+    <p>Please type your essay or answer below.</p>
+    
+    <textarea id="essayBox" placeholder="Start typing..."></textarea><br>
+    <button id="submitBtn">Submit</button>
+
+    <h3>Result</h3>
+    <pre id="result"></pre>
+   </div>
+    <script>
+        let keystrokes = [];
+        let words = [];
+        let currentWord = '';
+        let wordStart = null;
+        let lastKeyTime = null;
+        let backspaces = 0;
+        let sessionStart = null;
+
+        const textarea = document.getElementById("essayBox");
+
+        textarea.addEventListener("keydown", function(event) {
+            const now = Date.now();
+            if (!sessionStart) sessionStart = now;
+
+            const pause = lastKeyTime ? (now - lastKeyTime) / 1000 : null;
+            lastKeyTime = now;
+
+            const key = event.key;
+            const isSpecial = key.length > 1;
+
+            keystrokes.push({
+                timestamp: now / 1000,
+                pause_since_last: pause,
+                key: key,
+                is_special: isSpecial
+            });
+
+            if (!isSpecial) {
+                if (key === " ") {
+                    finalizeWord(now / 1000);
+                } else {
+                    currentWord += key;
+                    if (!wordStart) wordStart = now / 1000;
+                }
+            } else if (key === "Backspace") {
+                currentWord = currentWord.slice(0, -1);
+                backspaces += 1;
+            } else if (key === "Enter" || key === "ESC") {
+                finalizeWord(now / 1000);
+            }
+        });
+
+        function finalizeWord(endTime) {
+            if (currentWord.length > 0) {
+                const pauseBefore = words.length > 0 ? wordStart - words[words.length - 1].end_time : null;
+                words.push({
+                    word: currentWord,
+                    start_time: wordStart,
+                    end_time: endTime,
+                    duration: endTime - wordStart,
+                    pause_before: pauseBefore,
+                    backspaces: backspaces
+                });
+            }
+            currentWord = '';
+            wordStart = null;
+            backspaces = 0;
+        }
+
+        document.getElementById("submitBtn").addEventListener("click", async () => {
+            if (!sessionStart) {
+                alert("Please start typing before submitting.");
+                return;
+            }
+
+            finalizeWord(Date.now() / 1000);
+            const sessionEnd = Date.now() / 1000;
+            const sessionStartSec = sessionStart / 1000;
+
+            const essayText = document.getElementById("essayBox").value;
+
+            const payload = {
+                essay_text: essayText,
+                typing_data: {
+                    session_start_time: sessionStartSec,
+                    session_end_time: sessionEnd,
+                    duration_seconds: sessionEnd - sessionStartSec,
+                    keystrokes: keystrokes,
+                    words: words
+                }
+            };
+
+            try {
+                const response = await fetch(`/student/typing-test`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                document.getElementById("result").textContent = JSON.stringify(result, null, 2);
+            } catch (error) {
+                document.getElementById("result").textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Class Analytics - {{ class_obj.subject }} ({{ class_obj.class_id }})</title>
+    <link rel="stylesheet" href="/static/styles/class_analytics.css">
+</head>
+<body>
+    <div class="analytics-container">
+    <h2>Analytics for Class: {{ class_obj.subject }} ({{ class_obj.class_id }})</h2>
+    <div class="section">
+    <h3>Overall Engagement</h3>
+    <p>Average Engagement Score: <span class="highlight">{{ avg_engagement }}%</span></p>
+</div>
+<hr>
+<div class="section">
+    <h3>Students Who Submitted Essays</h3>
+    {% if submitted_students %}
+        <ul>
+        {% for student in submitted_students %}
+            <li>
+                {{ student.first_name }} {{ student.last_name }} ({{ student.roll_number }})
+                <a class="view-link" href="/lecturer/analytics/student/{{ student._id }}/class/{{ class_obj._id }}">View Engagement</a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p class="info">No submissions yet.</p>
+    {% endif %}
+</div>
+<hr>
+<div class="section">
+
+    <h3>Students Who Have Not Submitted</h3>
+    {% if non_submitted_students %}
+        <ul>
+        {% for student in non_submitted_students %}
+            <li>{{ student.first_name }} {{ student.last_name }} ({{ student.roll_number }})</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p class="info">All students have submitted.</p>
+    {% endif %}
+</div>
+    <hr>
+    <div class="back-link">
+    <a href="/lecturer/dashboard">Back to Dashboard</a>
+    </div>
+</div>
+</body>
+</html>
