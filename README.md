@@ -85,6 +85,12 @@ Go to:
 http://127.0.0.1:8000
 ```
 
+### 10. Demo Video of the Website
+
+```
+https://drive.google.com/file/d/1IUCXtZAtkfXke-fGN5v9dOhKDLU7w5wF/view?usp=sharing
+```
+
 ---
 
 
