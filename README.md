@@ -1,5 +1,4 @@
-# AI-Powered Interactive Learning Assistant for Classrooms (Problem Statement 4)
-## Intel Unnati Industrial training May - July 2025
+# AI-Powered Interactive Learning Assistant for Classrooms
 ## Team Members (GITAM)
 1. Meher Sai Sanjana Potukuchi (Trainee)
 2. Polamarasetti Gowtam (Trainee)
